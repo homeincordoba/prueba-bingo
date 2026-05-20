@@ -86,6 +86,46 @@
         button:active { transform: scale(0.97); background: #3d4f63; }
         button.primary { background: linear-gradient(135deg, #f0b232, #d18e1a); color: #1a1f2b; border: none; font-weight: 700; }
         button.secondary { background: #3a4b5e; }
+        button.call-line {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(238,90,36,0.4);
+        }
+        button.call-bingo {
+            background: linear-gradient(135deg, #feca57, #ff9f43);
+            color: #1a1f2b;
+            border: none;
+            font-weight: 700;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(255,159,67,0.5);
+        }
+        button.start-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(39,174,96,0.4);
+        }
+        button.stop-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(231,76,60,0.4);
+        }
+        button.continue-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(52,152,219,0.4);
+        }
         .card-container {
             background: #f5f0e1; border-radius: 16px; padding: 8px; display: grid; gap: 4px;
             border: 3px solid #c9a84c; touch-action: manipulation; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
@@ -186,9 +226,6 @@
         .qr-modal .qr-container { background: white; padding: 15px; border-radius: 16px; display: inline-block; border: 3px solid #ffb82e; }
         .qr-modal button { width: auto; padding: 10px 30px; background: #ffb82e; color: #1a1a2e; font-weight: bold; border-radius: 10px; }
         .action-buttons-row { display: flex; gap: 8px; }
-        .action-buttons-row button {
-            flex: 1; background: linear-gradient(135deg, #f0b232, #d18e1a); color: #1a1f2b; border: none; font-weight: 700;
-        }
         .language-selector {
             display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08);
             border-radius: 14px; padding: 8px 12px; border: 1px solid #3a4a6a; margin-bottom: 6px;
@@ -203,7 +240,7 @@
         <div class="ad-banner" data-i18n="ad_banner">📢 Banner Publicitario</div>
 
         <div id="logo-home" class="logo-home">
-            <img src="https://i.ibb.co/Qjvmh4TP/logo.png" alt="Bingo Social Room Logo">
+            <img src="https://i.ibb.co/Z1WnGBSv/logo.png" alt="Bingo Social Room Logo">
         </div>
 
         <div id="logo-header" class="logo-header" style="display:none;">
@@ -240,6 +277,8 @@
             <div id="panel-crear" style="display:none; flex-direction:column; gap:10px;">
                 <div class="config-row"><label data-i18n="mode">Modo:</label><select id="select-modo"><option value="30">30 bolas (3×3)</option><option value="75" selected>75 bolas (5×5)</option><option value="90">90 bolas (3×9)</option></select></div>
                 <div class="config-row" style="justify-content:space-between;"><label data-i18n="participate">Participar</label><label class="toggle-switch"><input type="checkbox" id="toggle-participa" checked><span class="slider"></span></label></div>
+                <div class="config-row" style="justify-content:space-between;"><label data-i18n="automatic">Automático</label><label class="toggle-switch"><input type="checkbox" id="toggle-auto"><span class="slider"></span></label></div>
+                <div class="speed-slider" id="speed-slider-container" style="display:none;"><label>⏱️</label><input type="range" id="speed-range" min="3" max="10" value="5" step="0.5"><span id="speed-value">5s</span></div>
                 <button id="btn-volver-crear" class="secondary" data-i18n="back">Volver</button>
             </div>
             <div id="error-msg" style="color:#e06050; text-align:center; font-weight:500; font-size:0.85em;"></div>
@@ -250,10 +289,7 @@
         <div id="screen-organizer" class="screen">
             <div class="sala-code">Sala: <span id="codigo-sala-org"></span> <button class="copy-btn" id="copy-btn-org" data-i18n="copy">Copiar</button> <button class="qr-btn" id="qr-btn-org" data-i18n="qr">QR</button></div>
             <div class="voice-config"><label data-i18n="voice">Voz:</label><label class="toggle-switch"><input type="checkbox" id="toggle-voz-org" checked><span class="slider"></span></label><select id="select-idioma-org"><option value="es-ES">🇪🇸</option><option value="en-US">🇬🇧</option><option value="fr-FR">🇫🇷</option><option value="it-IT">🇮🇹</option><option value="de-DE">🇩🇪</option><option value="pt-BR">🇧🇷</option></select></div>
-            <div class="action-buttons-row">
-                <button id="btn-sacar-bola" data-i18n="draw_ball">Sacar Bola</button>
-                <button id="btn-toggle-auto" data-i18n="automatic">Automático</button>
-            </div>
+            <button id="btn-start-stop" class="start-btn">Comenzar</button>
             <div class="speed-slider" id="speed-slider-org" style="display:none;"><label>⏱️</label><input type="range" id="speed-range-org" min="3" max="10" value="5" step="0.5"><span id="speed-value-org">5s</span></div>
             <div id="org-card-container" class="card-container"></div>
             <div class="notification" id="aviso-notif-org" style="display:none;"></div>
@@ -262,8 +298,8 @@
                 <button id="btn-check-bingo-org" class="secondary" style="display:none;" data-i18n="check_bingo">Comprobar Bingo</button>
             </div>
             <div class="player-actions">
-                <button id="btn-cantar-linea-org" class="secondary" data-i18n="call_line">Cantar Línea</button>
-                <button id="btn-cantar-bingo-org" class="secondary" data-i18n="call_bingo">Cantar Bingo</button>
+                <button id="btn-cantar-linea-org" class="call-line" data-i18n="call_line">📢 Cantar Línea</button>
+                <button id="btn-cantar-bingo-org" class="call-bingo" data-i18n="call_bingo">🏆 Cantar Bingo</button>
             </div>
             <div id="number-board-org" class="number-board"></div>
             <div class="ad-banner" data-i18n="ad_banner">📢 Banner Publicitario</div>
@@ -280,8 +316,8 @@
             <div id="game-card-container" class="card-container"></div>
             <div class="notification" id="aviso-notif-game" style="display:none;"></div>
             <div class="player-actions">
-                <button id="btn-cantar-linea-game" class="secondary" data-i18n="call_line">Cantar Línea</button>
-                <button id="btn-cantar-bingo-game" class="secondary" data-i18n="call_bingo">Cantar Bingo</button>
+                <button id="btn-cantar-linea-game" class="call-line" data-i18n="call_line">📢 Cantar Línea</button>
+                <button id="btn-cantar-bingo-game" class="call-bingo" data-i18n="call_bingo">🏆 Cantar Bingo</button>
             </div>
             <div id="number-board-game" class="number-board"></div>
             <div class="ad-banner" data-i18n="ad_banner">📢 Banner Publicitario</div>
@@ -316,84 +352,103 @@
                     ad_banner: '📢 Banner Publicitario', nickname_placeholder: 'Tu apodo', create_room: 'Crear Sala',
                     join_room: 'Unirse', room_code_placeholder: 'Código de sala (4 letras)', enter_room: 'Entrar a Sala',
                     scan_qr: 'QR', back: 'Volver', mode: 'Modo:', participate: 'Participar', automatic: 'Automático',
-                    voice: 'Voz:', copy: 'Copiar', qr: 'QR', draw_ball: 'Sacar Bola', check_line: 'Comprobar Línea',
-                    check_bingo: 'Comprobar Bingo', call_line: 'Cantar Línea', call_bingo: 'Cantar Bingo',
+                    voice: 'Voz:', copy: 'Copiar', qr: 'QR', check_line: 'Comprobar Línea',
+                    check_bingo: 'Comprobar Bingo', call_line: '📢 Cantar Línea', call_bingo: '🏆 Cantar Bingo',
                     send: 'Enviar', exit: 'Salir', chat_placeholder: 'Mensaje...', ad_video: 'Video publicitario (10s)',
                     language: '🌐 Idioma:', error_nickname: 'Apodo requerido', error_code_4: 'Código de 4 letras requerido',
                     no_players: 'Sin jugadores', correct_line: '✅ ¡LÍNEA CORRECTA para {jugador}!',
                     false_line: '❌ LÍNEA FALSA para {jugador}', correct_bingo: '✅ ¡BINGO CORRECTO para {jugador}!',
                     false_bingo: '❌ BINGO FALSO para {jugador}',
                     cantar_linea: 'Han cantado línea',
-                    cantar_bingo: 'Han cantado bingo'
+                    cantar_bingo: 'Han cantado bingo',
+                    comenzar: 'Comenzar',
+                    parar: 'Parar',
+                    continuar: 'Continuar'
                 },
                 'en-US': {
                     ad_banner: '📢 Advertisement', nickname_placeholder: 'Your nickname', create_room: 'Create Room',
                     join_room: 'Join', room_code_placeholder: 'Room code (4 letters)', enter_room: 'Enter Room',
                     scan_qr: 'QR', back: 'Back', mode: 'Mode:', participate: 'Participate', automatic: 'Automatic',
-                    voice: 'Voice:', copy: 'Copy', qr: 'QR', draw_ball: 'Draw Ball', check_line: 'Check Line',
-                    check_bingo: 'Check Bingo', call_line: 'Call Line', call_bingo: 'Call Bingo', send: 'Send',
-                    exit: 'Exit', chat_placeholder: 'Message...', ad_video: 'Ad video (10s)', language: '🌐 Language:',
-                    error_nickname: 'Nickname required', error_code_4: '4-letter code required', no_players: 'No players',
-                    correct_line: '✅ CORRECT LINE for {jugador}!', false_line: '❌ FALSE LINE for {jugador}',
-                    correct_bingo: '✅ CORRECT BINGO for {jugador}!', false_bingo: '❌ FALSE BINGO for {jugador}',
+                    voice: 'Voice:', copy: 'Copy', qr: 'QR', check_line: 'Check Line',
+                    check_bingo: 'Check Bingo', call_line: '📢 Call Line', call_bingo: '🏆 Call Bingo',
+                    send: 'Send', exit: 'Exit', chat_placeholder: 'Message...', ad_video: 'Ad video (10s)',
+                    language: '🌐 Language:', error_nickname: 'Nickname required', error_code_4: '4-letter code required',
+                    no_players: 'No players', correct_line: '✅ CORRECT LINE for {jugador}!',
+                    false_line: '❌ FALSE LINE for {jugador}', correct_bingo: '✅ CORRECT BINGO for {jugador}!',
+                    false_bingo: '❌ FALSE BINGO for {jugador}',
                     cantar_linea: 'They called line',
-                    cantar_bingo: 'They called bingo'
+                    cantar_bingo: 'They called bingo',
+                    comenzar: 'Start',
+                    parar: 'Stop',
+                    continuar: 'Continue'
                 },
                 'fr-FR': {
                     ad_banner: '📢 Publicité', nickname_placeholder: 'Votre pseudo', create_room: 'Créer une salle',
                     join_room: 'Rejoindre', room_code_placeholder: 'Code de la salle (4 lettres)', enter_room: 'Entrer dans la salle',
                     scan_qr: 'QR', back: 'Retour', mode: 'Mode:', participate: 'Participer', automatic: 'Automatique',
-                    voice: 'Voix:', copy: 'Copier', qr: 'QR', draw_ball: 'Tirer une boule', check_line: 'Vérifier Ligne',
-                    check_bingo: 'Vérifier Bingo', call_line: 'Annoncer Ligne', call_bingo: 'Annoncer Bingo',
+                    voice: 'Voix:', copy: 'Copier', qr: 'QR', check_line: 'Vérifier Ligne',
+                    check_bingo: 'Vérifier Bingo', call_line: '📢 Annoncer Ligne', call_bingo: '🏆 Annoncer Bingo',
                     send: 'Envoyer', exit: 'Sortir', chat_placeholder: 'Message...', ad_video: 'Vidéo publicitaire (10s)',
                     language: '🌐 Langue:', error_nickname: 'Pseudo requis', error_code_4: 'Code à 4 lettres requis',
                     no_players: 'Aucun joueur', correct_line: '✅ LIGNE CORRECTE pour {jugador} !',
                     false_line: '❌ FAUSSE LIGNE pour {jugador}', correct_bingo: '✅ BINGO CORRECT pour {jugador} !',
                     false_bingo: '❌ FAUX BINGO pour {jugador}',
                     cantar_linea: 'Ils ont chanté ligne',
-                    cantar_bingo: 'Ils ont chanté bingo'
+                    cantar_bingo: 'Ils ont chanté bingo',
+                    comenzar: 'Commencer',
+                    parar: 'Arrêter',
+                    continuar: 'Continuer'
                 },
                 'it-IT': {
                     ad_banner: '📢 Pubblicità', nickname_placeholder: 'Il tuo nickname', create_room: 'Crea Stanza',
                     join_room: 'Unisciti', room_code_placeholder: 'Codice stanza (4 lettere)', enter_room: 'Entra nella stanza',
                     scan_qr: 'QR', back: 'Indietro', mode: 'Modalità:', participate: 'Partecipa', automatic: 'Automatico',
-                    voice: 'Voce:', copy: 'Copia', qr: 'QR', draw_ball: 'Estrai palla', check_line: 'Controlla Linea',
-                    check_bingo: 'Controlla Bingo', call_line: 'Canta Linea', call_bingo: 'Canta Bingo', send: 'Invia',
-                    exit: 'Esci', chat_placeholder: 'Messaggio...', ad_video: 'Video pubblicitario (10s)',
+                    voice: 'Voce:', copy: 'Copia', qr: 'QR', check_line: 'Controlla Linea',
+                    check_bingo: 'Controlla Bingo', call_line: '📢 Canta Linea', call_bingo: '🏆 Canta Bingo',
+                    send: 'Invia', exit: 'Esci', chat_placeholder: 'Messaggio...', ad_video: 'Video pubblicitario (10s)',
                     language: '🌐 Lingua:', error_nickname: 'Nickname richiesto', error_code_4: 'Codice di 4 lettere richiesto',
                     no_players: 'Nessun giocatore', correct_line: '✅ LINEA CORRETTA per {jugador}!',
                     false_line: '❌ LINEA FALSA per {jugador}', correct_bingo: '✅ BINGO CORRETTO per {jugador}!',
                     false_bingo: '❌ BINGO FALSO per {jugador}',
                     cantar_linea: 'Hanno cantato linea',
-                    cantar_bingo: 'Hanno cantato bingo'
+                    cantar_bingo: 'Hanno cantato bingo',
+                    comenzar: 'Iniziare',
+                    parar: 'Fermare',
+                    continuar: 'Continuare'
                 },
                 'de-DE': {
                     ad_banner: '📢 Werbung', nickname_placeholder: 'Dein Spitzname', create_room: 'Raum erstellen',
                     join_room: 'Beitreten', room_code_placeholder: 'Raumcode (4 Buchstaben)', enter_room: 'Raum betreten',
                     scan_qr: 'QR', back: 'Zurück', mode: 'Modus:', participate: 'Teilnehmen', automatic: 'Automatisch',
-                    voice: 'Stimme:', copy: 'Kopieren', qr: 'QR', draw_ball: 'Kugel ziehen', check_line: 'Linie prüfen',
-                    check_bingo: 'Bingo prüfen', call_line: 'Linie rufen', call_bingo: 'Bingo rufen', send: 'Senden',
-                    exit: 'Verlassen', chat_placeholder: 'Nachricht...', ad_video: 'Werbevideo (10s)',
+                    voice: 'Stimme:', copy: 'Kopieren', qr: 'QR', check_line: 'Linie prüfen',
+                    check_bingo: 'Bingo prüfen', call_line: '📢 Linie rufen', call_bingo: '🏆 Bingo rufen',
+                    send: 'Senden', exit: 'Verlassen', chat_placeholder: 'Nachricht...', ad_video: 'Werbevideo (10s)',
                     language: '🌐 Sprache:', error_nickname: 'Spitzname erforderlich', error_code_4: '4-Buchstaben-Code erforderlich',
                     no_players: 'Keine Spieler', correct_line: '✅ RICHTIGE LINIE für {jugador}!',
                     false_line: '❌ FALSCHE LINIE für {jugador}', correct_bingo: '✅ RICHTIGES BINGO für {jugador}!',
                     false_bingo: '❌ FALSCHES BINGO für {jugador}',
                     cantar_linea: 'Sie haben Linie gerufen',
-                    cantar_bingo: 'Sie haben Bingo gerufen'
+                    cantar_bingo: 'Sie haben Bingo gerufen',
+                    comenzar: 'Starten',
+                    parar: 'Stoppen',
+                    continuar: 'Fortsetzen'
                 },
                 'pt-BR': {
                     ad_banner: '📢 Publicidade', nickname_placeholder: 'Seu apelido', create_room: 'Criar Sala',
                     join_room: 'Entrar', room_code_placeholder: 'Código da sala (4 letras)', enter_room: 'Entrar na Sala',
                     scan_qr: 'QR', back: 'Voltar', mode: 'Modo:', participate: 'Participar', automatic: 'Automático',
-                    voice: 'Voz:', copy: 'Copiar', qr: 'QR', draw_ball: 'Sacar Bola', check_line: 'Verificar Linha',
-                    check_bingo: 'Verificar Bingo', call_line: 'Cantar Linha', call_bingo: 'Cantar Bingo',
+                    voice: 'Voz:', copy: 'Copiar', qr: 'QR', check_line: 'Verificar Linha',
+                    check_bingo: 'Verificar Bingo', call_line: '📢 Cantar Linha', call_bingo: '🏆 Cantar Bingo',
                     send: 'Enviar', exit: 'Sair', chat_placeholder: 'Mensagem...', ad_video: 'Vídeo publicitário (10s)',
                     language: '🌐 Idioma:', error_nickname: 'Apelido obrigatório', error_code_4: 'Código de 4 letras obrigatório',
                     no_players: 'Sem jogadores', correct_line: '✅ LINHA CORRETA para {jugador}!',
                     false_line: '❌ LINHA FALSA para {jugador}', correct_bingo: '✅ BINGO CORRETO para {jugador}!',
                     false_bingo: '❌ BINGO FALSO para {jugador}',
                     cantar_linea: 'Cantaram linha',
-                    cantar_bingo: 'Cantaram bingo'
+                    cantar_bingo: 'Cantaram bingo',
+                    comenzar: 'Começar',
+                    parar: 'Parar',
+                    continuar: 'Continuar'
                 }
             };
 
@@ -418,6 +473,11 @@
                         list.textContent = t('no_players');
                     }
                 });
+                if (btnStartStop) {
+                    if (gameStarted && !gamePaused) btnStartStop.textContent = t('parar');
+                    else if (gameStarted && gamePaused) btnStartStop.textContent = t('continuar');
+                    else btnStartStop.textContent = t('comenzar');
+                }
             }
 
             function createFloatingBalls() {
@@ -456,6 +516,10 @@
             const btnVolverCrear = $('btn-volver-crear');
             const selectModo = $('select-modo');
             const toggleParticipa = $('toggle-participa');
+            const toggleAuto = $('toggle-auto');
+            const speedSliderContainer = $('speed-slider-container');
+            const speedRange = $('speed-range');
+            const speedValue = $('speed-value');
             const errorMsg = $('error-msg');
             const ballOverlay = $('ball-overlay');
             const giantBallNumber = $('giant-ball-number');
@@ -466,8 +530,7 @@
             const qrBtnOrg = $('qr-btn-org');
             const toggleVozOrg = $('toggle-voz-org');
             const selectIdiomaOrg = $('select-idioma-org');
-            const btnSacarBola = $('btn-sacar-bola');
-            const btnToggleAuto = $('btn-toggle-auto');
+            const btnStartStop = $('btn-start-stop');
             const speedSliderOrg = $('speed-slider-org');
             const speedRangeOrg = $('speed-range-org');
             const speedValueOrg = $('speed-value-org');
@@ -511,6 +574,8 @@
             let autoInterval = null;
             let autoSpeed = 5000;
             let autoActive = false;
+            let gameStarted = false;
+            let gamePaused = false;
             let pendingCanto = null;
 
             const synth = window.speechSynthesis;
@@ -723,17 +788,50 @@
             function stopAuto() {
                 if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
                 autoActive = false;
-                btnToggleAuto.textContent = t('automatic');
-                speedSliderOrg.style.display = 'none';
+                gamePaused = true;
+                if (btnStartStop) {
+                    btnStartStop.textContent = t('continuar');
+                    btnStartStop.className = 'continue-btn';
+                }
             }
 
             function startAuto() {
                 if (!currentUser.salaId) return;
                 autoActive = true;
-                btnToggleAuto.textContent = 'Parar';
+                gameStarted = true;
+                gamePaused = false;
+                if (btnStartStop) {
+                    btnStartStop.textContent = t('parar');
+                    btnStartStop.className = 'stop-btn';
+                }
                 speedSliderOrg.style.display = 'flex';
                 autoSpeed = parseInt(speedRangeOrg.value) * 1000;
                 autoInterval = setInterval(() => sacarBola(), autoSpeed);
+            }
+
+            function toggleGame() {
+                if (!gameStarted) {
+                    // Comenzar
+                    if (autoActive) {
+                        startAuto();
+                    } else {
+                        gameStarted = true;
+                        btnStartStop.textContent = t('parar');
+                        btnStartStop.className = 'stop-btn';
+                    }
+                } else if (!gamePaused) {
+                    // Parar
+                    stopAuto();
+                } else {
+                    // Continuar
+                    if (autoActive) {
+                        startAuto();
+                    } else {
+                        gamePaused = false;
+                        btnStartStop.textContent = t('parar');
+                        btnStartStop.className = 'stop-btn';
+                    }
+                }
             }
 
             function salirDeSala() {
@@ -747,8 +845,14 @@
                 playerCard = [];
                 drawnBallsSet.clear();
                 manuallyMarkedCells.clear();
+                gameStarted = false;
+                gamePaused = false;
                 adVideoContainer.style.display = 'none';
                 ballOverlay.style.display = 'none';
+                if (btnStartStop) {
+                    btnStartStop.textContent = t('comenzar');
+                    btnStartStop.className = 'start-btn';
+                }
                 showScreen(screenHome);
                 resetHomePanels();
             }
@@ -802,6 +906,15 @@
                         renderNumberBoard(numberBoardGame, maxNum, drawnBallsSet);
                         renderCard(gameCardContainer, playerCard, manuallyMarkedCells);
                     }
+                    if (balls.length >= maxNum) {
+                        stopAuto();
+                        gameStarted = false;
+                        gamePaused = false;
+                        if (btnStartStop) {
+                            btnStartStop.textContent = t('comenzar');
+                            btnStartStop.className = 'start-btn';
+                        }
+                    }
                 });
 
                 listeners.aviso = db.ref(`salas/${salaId}/avisoAccion`);
@@ -836,6 +949,8 @@
                         const notif = isOrg ? avisoNotifOrg : avisoNotifGame;
                         notif.style.display = 'block';
                         notif.textContent = resultado.mensaje;
+                        const idioma = isOrg ? selectIdiomaOrg.value : selectIdiomaGame.value;
+                        speakPhrase(resultado.mensaje, idioma);
                         clearTimeout(window._avisoT);
                         window._avisoT = setTimeout(() => notif.style.display = 'none', 5000);
                         db.ref(`salas/${salaId}/resultadoAccion`).set(null);
@@ -868,12 +983,13 @@
 
             async function sacarBola() {
                 if (!currentUser.salaId || currentUser.rol !== 'organizador') return;
+                if (!gameStarted || gamePaused) return;
                 const ref = db.ref(`salas/${currentUser.salaId}/bolasExtraidas`);
                 const snap = await ref.once('value');
                 const data = snap.val() || {};
                 const balls = Object.values(data).filter(v => typeof v === 'number');
                 const maxNum = getCardConfig(currentGameMode).max;
-                if (balls.length >= maxNum) { stopAuto(); alert('Todas las bolas han sido extraídas'); return; }
+                if (balls.length >= maxNum) { stopAuto(); return; }
                 let n; const set = new Set(balls);
                 do { n = Math.floor(Math.random() * maxNum) + 1; } while (set.has(n));
                 await ref.push(n);
@@ -940,7 +1056,6 @@
                             inputCodigo.value = sala.toUpperCase().replace(/[^A-Z]/g, '').slice(0,4);
                             modal.remove();
                             window.html5QrcodeScanner.clear();
-                            // Ocultar botones de unirse y QR, solo dejar entrar a sala
                             unirseButtons.style.display = 'none';
                             btnConfirmarUnirse.click();
                         }
@@ -970,6 +1085,8 @@
                     errorMsg.textContent = ''; return;
                 }
                 const modo = selectModo.value; const participa = toggleParticipa.checked;
+                autoActive = toggleAuto.checked;
+                autoSpeed = parseInt(speedRange.value) * 1000;
                 errorMsg.textContent = ''; btnCrear.disabled = true;
                 try {
                     const id = await crearSala(nick, participa, modo);
@@ -980,9 +1097,19 @@
                         renderCard(orgCardContainer, playerCard, manuallyMarkedCells);
                     } else orgCardContainer.innerHTML = '<p style="text-align:center;color:#aaa;">Modo espectador</p>';
                     setupListeners(id, true); chatMessagesOrg.innerHTML = '';
+                    gameStarted = false;
+                    gamePaused = false;
+                    btnStartStop.textContent = t('comenzar');
+                    btnStartStop.className = 'start-btn';
+                    if (autoActive) {
+                        speedSliderOrg.style.display = 'flex';
+                        speedRangeOrg.value = speedRange.value;
+                        speedValueOrg.textContent = speedRange.value + 's';
+                    } else {
+                        speedSliderOrg.style.display = 'none';
+                    }
                     showScreen(screenOrg);
                     btnCheckLineaOrg.style.display = 'none'; btnCheckBingoOrg.style.display = 'none';
-                    stopAuto();
                     panelCrear.style.display = 'none'; btnUnirse.style.display = 'none';
                 } catch (e) { errorMsg.textContent = e.message; }
                 finally { btnCrear.disabled = false; }
@@ -1000,6 +1127,8 @@
             btnVolverUnirse.addEventListener('click', resetHomePanels);
             btnVolverCrear.addEventListener('click', resetHomePanels);
             inputCodigo.addEventListener('input', () => { inputCodigo.value = inputCodigo.value.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 4); });
+            toggleAuto.addEventListener('change', () => { speedSliderContainer.style.display = toggleAuto.checked ? 'flex' : 'none'; });
+            speedRange.addEventListener('input', () => { speedValue.textContent = speedRange.value + 's'; });
 
             btnConfirmarUnirse.addEventListener('click', async () => {
                 const nick = inputNickname.value.trim(); const code = inputCodigo.value.trim().toUpperCase();
@@ -1023,12 +1152,15 @@
             copyBtnGame.addEventListener('click', () => navigator.clipboard.writeText(codigoSalaGame.textContent));
             qrBtnOrg.addEventListener('click', () => showQR(codigoSalaOrg.textContent));
 
-            btnSacarBola.addEventListener('click', () => sacarBola());
-            btnToggleAuto.addEventListener('click', () => { if (autoActive) stopAuto(); else startAuto(); });
+            btnStartStop.addEventListener('click', toggleGame);
 
             speedRangeOrg.addEventListener('input', () => {
                 speedValueOrg.textContent = speedRangeOrg.value + 's';
-                if (autoActive) { clearInterval(autoInterval); autoSpeed = parseInt(speedRangeOrg.value) * 1000; autoInterval = setInterval(() => sacarBola(), autoSpeed); }
+                if (autoActive && gameStarted && !gamePaused) {
+                    clearInterval(autoInterval);
+                    autoSpeed = parseInt(speedRangeOrg.value) * 1000;
+                    autoInterval = setInterval(() => sacarBola(), autoSpeed);
+                }
             });
 
             btnCantarLineaOrg.addEventListener('click', () => cantar('línea'));
