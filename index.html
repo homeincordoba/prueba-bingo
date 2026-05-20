@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bingo Social Room</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; -webkit-tap-highlight-color:transparent; user-select:none; }
+        body { background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; min-height:100dvh; padding:8px; overflow:hidden; }
+        #app { width:100%; max-width:500px; height:100vh; height:100dvh; background:rgba(20,25,45,0.85); backdrop-filter:blur(10px); border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.7); display:flex; flex-direction:column; border:1px solid #3a4a6a; position:relative; z-index:1; overflow:hidden; }
+        .screen { display:none; flex-direction:column; flex:1; overflow-y:auto; padding:14px 10px; gap:10px; }
+        .screen.active { display:flex; }
+        .logo-home { text-align:center; flex-shrink:0; margin:4px 0; }
+        .logo-home img { width:70%; max-width:260px; height:auto; display:block; margin:0 auto; }
+        .ad-banner { background:rgba(255,255,255,0.08); border:1px dashed #4a5568; border-radius:12px; padding:10px; text-align:center; color:#8899aa; font-size:0.75em; min-height:45px; flex-shrink:0; }
+        input, button, select { border-radius:12px; padding:12px 14px; font-size:0.9em; border:none; outline:none; width:100%; transition:all 0.2s; }
+        input, select { background:#1b2331; color:#fff; border:1px solid #334155; text-align:center; font-weight:500; }
+        button { background:#2e3b4a; color:white; font-weight:bold; cursor:pointer; border:1px solid #45576b; }
+        button:active { transform:scale(0.97); }
+        button.primary { background:linear-gradient(135deg,#f0b232,#d18e1a); color:#1a1f2b; border:none; font-weight:700; }
+        button.secondary { background:#3a4b5e; }
+        .home-buttons { display:flex; gap:8px; }
+        .content-area { flex:1; display:flex; flex-direction:column; gap:6px; justify-content:center; padding:4px 0; }
+        .loading-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a2e; display:flex; align-items:center; justify-content:center; z-index:99999; color:#ffb82e; font-size:1.5em; font-weight:bold; }
+    </style>
+</head>
+<body>
+    <div id="loading-screen" class="loading-screen">🎱 Cargando Bingo...</div>
+    <div id="app">
+        <div id="screen-home" class="screen active">
+            <div class="ad-banner">📢 Banner Publicitario</div>
+            <div class="content-area">
+                <div class="logo-home"><img src="https://i.ibb.co/Z1WnGBSv/logo.png" alt="Logo"></div>
+                <div class="home-buttons">
+                    <button id="btn-crear" class="primary">Crear Sala</button>
+                    <button id="btn-unirse" class="secondary">Unirse a Sala</button>
+                </div>
+            </div>
+            <div class="ad-banner">📢 Banner Publicitario</div>
+        </div>
+
+        <div id="screen-crear" class="screen">
+            <div class="ad-banner">📢 Banner Publicitario</div>
+            <input type="text" id="input-nickname-crear" placeholder="Tu apodo" maxlength="15">
+            <button id="btn-confirmar-crear" class="primary">Crear Sala</button>
+            <button id="btn-volver-crear" class="secondary">Volver</button>
+            <div class="ad-banner">📢 Banner Publicitario</div>
+        </div>
+
+        <div id="screen-unirse" class="screen">
+            <div class="ad-banner">📢 Banner Publicitario</div>
+            <input type="text" id="input-nickname-unirse" placeholder="Tu apodo" maxlength="15">
+            <input type="text" id="input-codigo" placeholder="Código de sala (4 letras)" maxlength="4">
+            <button id="btn-confirmar-unirse" class="primary">Entrar a Sala</button>
+            <button id="btn-volver-unirse" class="secondary">Volver</button>
+            <div class="ad-banner">📢 Banner Publicitario</div>
+        </div>
+
+        <div id="screen-organizer" class="screen">
+            <div class="ad-banner">📢 Banner Publicitario</div>
+            <div>Sala: <span id="codigo-sala-org"></span></div>
+            <button id="btn-start-stop" class="primary">Comenzar</button>
+            <button id="btn-salir-org" class="secondary">Salir</button>
+            <div class="ad-banner">📢 Banner Publicitario</div>
+        </div>
+
+        <div id="screen-game" class="screen">
+            <div class="ad-banner">📢 Banner Publicitario</div>
+            <div>Sala: <span id="codigo-sala-game"></span></div>
+            <button id="btn-salir-game" class="secondary">Salir</button>
+            <div class="ad-banner">📢 Banner Publicitario</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyD4-pn2JLOjFpW4I5xGBKx8aP1DWYTGXgg",
+                authDomain: "bingo-social-room.firebaseapp.com",
+                databaseURL: "https://bingo-social-room-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "bingo-social-room",
+                storageBucket: "bingo-social-room.firebasestorage.app",
+                messagingSenderId: "496935257620",
+                appId: "1:496935257620:web:2961836bc242a34093c901"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const auth = firebase.auth();
+
+            let currentUser = { uid: '', nickname: '', salaId: '', rol: '' };
+            const $ = id => document.getElementById(id);
+
+            function showScreen(id) {
+                ['screen-home','screen-crear','screen-unirse','screen-organizer','screen-game'].forEach(s => $(s).classList.remove('active'));
+                $(id).classList.add('active');
+            }
+
+            function goHome() {
+                currentUser.salaId = ''; currentUser.rol = '';
+                showScreen('screen-home');
+            }
+
+            // Autenticación anónima
+            auth.signInAnonymously()
+                .then((userCredential) => {
+                    currentUser.uid = userCredential.user.uid;
+                    console.log('✅ Auth OK:', currentUser.uid);
+                    document.getElementById('loading-screen').style.display = 'none';
+                })
+                .catch((error) => {
+                    console.error('Auth error:', error);
+                    document.getElementById('loading-screen').innerHTML = 'Error: ' + error.message + '<br><small>Recarga la página</small>';
+                });
+
+            // Navegación
+            $('btn-crear').addEventListener('click', () => showScreen('screen-crear'));
+            $('btn-unirse').addEventListener('click', () => showScreen('screen-unirse'));
+            $('btn-volver-crear').addEventListener('click', goHome);
+            $('btn-volver-unirse').addEventListener('click', goHome);
+            $('btn-salir-org').addEventListener('click', goHome);
+            $('btn-salir-game').addEventListener('click', goHome);
+
+            // Crear sala
+            $('btn-confirmar-crear').addEventListener('click', async () => {
+                const nick = $('input-nickname-crear').value.trim();
+                if (!nick) return alert('Pon un apodo');
+                if (!currentUser.uid) return alert('Espera autenticación...');
+                
+                const salaId = Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join('');
+                await db.ref(`salas/${salaId}`).set({
+                    organizador: currentUser.uid,
+                    bolasExtraidas: { init: true },
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                await db.ref(`salas/${salaId}/usuarios/${currentUser.uid}`).set({ nickname: nick });
+                
+                currentUser.salaId = salaId;
+                currentUser.rol = 'organizador';
+                currentUser.nickname = nick;
+                $('codigo-sala-org').textContent = salaId;
+                showScreen('screen-organizer');
+            });
+
+            // Unirse a sala
+            $('btn-confirmar-unirse').addEventListener('click', async () => {
+                const nick = $('input-nickname-unirse').value.trim();
+                const code = $('input-codigo').value.trim().toUpperCase();
+                if (!nick || !code) return alert('Completa todos los campos');
+                if (!currentUser.uid) return alert('Espera autenticación...');
+
+                const snap = await db.ref(`salas/${code}`).once('value');
+                if (!snap.exists()) return alert('Sala no existe');
+
+                await db.ref(`salas/${code}/usuarios/${currentUser.uid}`).set({ nickname: nick });
+                
+                currentUser.salaId = code;
+                currentUser.rol = 'jugador';
+                currentUser.nickname = nick;
+                $('codigo-sala-game').textContent = code;
+                showScreen('screen-game');
+            });
+
+        })();
+    </script>
+</body>
+</html>
